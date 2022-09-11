@@ -7,7 +7,7 @@ const test = require('ava')
 const axios = require('axios')
 const Lotus = require('../index')
 
-const noop = () => { }
+const noop = () => {}
 
 const port = 6042
 
@@ -29,10 +29,9 @@ const createClient = (options) => {
 test.before.cb((t) => {
     express()
         .use(bodyParser.json())
-        .post('/track', (req, res) => {
+        .post('/track/', (req, res) => {
             const { batch } = req.body
-
-            if (!req.headers['X-API-KEY']) {
+            if (!req.headers['x-api-key']) {
                 return res.status(400).json({
                     error: { message: 'missing api key' },
                 })
@@ -54,7 +53,6 @@ test.before.cb((t) => {
             if (batch[0] === 'timeout') {
                 return setTimeout(() => res.end(), 5000)
             }
-
             res.json({})
         })
         .listen(port, t.end)
@@ -130,7 +128,6 @@ test('enqueue - add a message to the queue', (t) => {
             timestamp,
             library: 'lotus-node',
             type: 'type',
-
         },
         callback: noop,
     })
@@ -323,19 +320,4 @@ test('isErrorRetryable', (t) => {
     t.true(client._isErrorRetryable({ response: { status: 429 } }))
 
     t.false(client._isErrorRetryable({ response: { status: 200 } }))
-})
-
-test('does not allow messages > 32 kB', async (t) => {
-    const client = createClient()
-
-    const event = {
-        idempotencyId: 1,
-        eventName: 'event',
-        properties: {},
-    }
-    for (var i = 0; i < 10000; i++) {
-        event.properties[i] = 'a'
-    }
-
-    await t.throwsAsync(() => client.flush(), { message: 'Your message must be < 32 kB.' })
 })

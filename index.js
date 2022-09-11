@@ -8,7 +8,7 @@ const ms = require('ms')
 const looselyValidate = require('./event-validation')
 
 const setImmediate = global.setImmediate || process.nextTick.bind(process)
-const noop = () => { }
+const noop = () => {}
 
 const FIVE_MINUTES = 5 * 60 * 1000
 class Lotus {
@@ -56,10 +56,7 @@ class Lotus {
             looselyValidate(message, type)
         } catch (e) {
             if (e.message === 'Your message must be < 32 kB.') {
-                console.log(
-                    'Your message must be < 32 kB.',
-                    JSON.stringify(message)
-                )
+                console.log('Your message must be < 32 kB.', JSON.stringify(message))
                 return
             }
             throw e
@@ -110,10 +107,9 @@ class Lotus {
         message.library = 'lotus-node'
 
         if (!message.timestamp) {
-            message.time_created = new Date()
-        }
-        else {
-            message.time_created = message.timestamp
+            message.timestamp = new Date()
+        } else {
+            message.timestamp = message.timestamp
             //delete message.timestamp
         }
 
@@ -131,7 +127,6 @@ class Lotus {
             message.event_name = message.eventName
             delete message.eventName
         }
-
 
         this.queue.push({ message, callback })
 
@@ -186,10 +181,6 @@ class Lotus {
             callback(err, data)
         }
 
-        // Don't set the user agent if we're not on a browser. The latest spec allows
-        // the User-Agent header (see https://fetch.spec.whatwg.org/#terminology-headers
-        // and https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/setRequestHeader),
-        // but browsers such as Chrome and Safari have not caught up.
         const headers = { 'X-API-KEY': this.apiKey }
         if (typeof window === 'undefined') {
             headers['user-agent'] = `lotus-node`
