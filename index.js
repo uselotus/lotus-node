@@ -6,6 +6,7 @@ const axios = require('axios')
 const axiosRetry = require('axios-retry')
 const ms = require('ms')
 const looselyValidate = require('./event-validation')
+const customerValidate = require('./customer-validation')
 
 const setImmediate = global.setImmediate || process.nextTick.bind(process)
 const noop = () => {}
@@ -64,6 +65,38 @@ class Lotus {
     }
 
     /**
+     * Create a new Customer or update an existing Customer.
+     * @param {Object} message
+     * @param {String} message.customerId
+     *
+     */
+    customer(messsage, callback) {
+        customerValidate(messsage, 'customer')
+
+        const req = {
+            method: 'POST',
+            url: `${this.host}/api/customers/`,
+            data,
+            headers,
+        }
+
+        if (this.timeout) {
+            req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
+        }
+
+        axios(req)
+            .then(() => done())
+            .catch((err) => {
+                if (err.response) {
+                    const error = new Error(err.response.statusText)
+                    return done(error)
+                }
+
+                done(err)
+            })
+    }
+
+    /**
      * Send a trackEvent `message`.
      *
      * @param {Object} message
@@ -79,6 +112,7 @@ class Lotus {
         })
 
         const apiMessage = Object.assign({}, message, { properties })
+        console.log(323)
 
         this.enqueue('trackEvent', apiMessage, callback)
 
@@ -110,7 +144,6 @@ class Lotus {
             message.timestamp = new Date()
         } else {
             message.timestamp = message.timestamp
-            //delete message.timestamp
         }
 
         if (message.idempotencyId) {
@@ -127,7 +160,6 @@ class Lotus {
             message.event_name = message.eventName
             delete message.eventName
         }
-
         this.queue.push({ message, callback })
 
         if (!this.flushed) {
@@ -188,7 +220,7 @@ class Lotus {
 
         const req = {
             method: 'POST',
-            url: `${this.host}/track/`,
+            url: `${this.host}/api/track/`,
             data,
             headers,
         }

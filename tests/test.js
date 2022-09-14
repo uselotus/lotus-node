@@ -29,7 +29,7 @@ const createClient = (options) => {
 test.before.cb((t) => {
     express()
         .use(bodyParser.json())
-        .post('/track/', (req, res) => {
+        .post('/api/track/', (req, res) => {
             const { batch } = req.body
             if (!req.headers['x-api-key']) {
                 return res.status(400).json({
@@ -285,6 +285,33 @@ test('flush - skip when client is disabled', async (t) => {
     t.false(callback.called)
 })
 
+test('trackEvent --enqueue and flush many messages', async (t) => {
+    const client = createClient({ flushAt: 2 })
+    stub(client, 'enqueue')
+
+    const message1 = {
+        eventName: 'test',
+        timestamp: new Date(),
+        customerId: '123',
+        idempotencyId: '123',
+        properties: { test: 'test' },
+    }
+
+    client.trackEvent(message1)
+
+    const message2 = {
+        eventName: 'test',
+        timestamp: new Date(),
+        customerId: '123',
+        idempotencyId: '12453',
+        properties: { test: 'test' },
+    }
+
+    stub(client, 'flush')
+    t.true(client.enqueue.calledOnce)
+    t.false(client.flush.called)
+})
+
 test('trackEvent - enqueue a message', (t) => {
     const client = createClient()
     stub(client, 'enqueue')
@@ -300,6 +327,7 @@ test('trackEvent - enqueue a message', (t) => {
     }
 
     client.trackEvent(message, noop)
+    console.log(client.queue)
 
     t.true(client.enqueue.calledOnce)
     t.deepEqual(client.enqueue.firstCall.args, ['trackEvent', apiMessage, noop])
