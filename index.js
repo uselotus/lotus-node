@@ -6,6 +6,7 @@ const axios = require('axios')
 const axiosRetry = require('axios-retry')
 const ms = require('ms')
 const looselyValidate = require('./event-validation')
+// const customerValidation = require('./customer-validation')
 
 const setImmediate = global.setImmediate || process.nextTick.bind(process)
 const noop = () => {}
@@ -66,34 +67,45 @@ class Lotus {
     /**
     //  * Create a new Customer or update an existing Customer.
     //  * @param {Object} message
-    //  * @param {String} message.customerId
     //  *
     //  */
-    // customer(messsage, callback) {
-    //     customerValidate(messsage, 'customer')
+    customer(message, callback) {
+        // customerValidate(messsage, 'customer')
 
-    //     const req = {
-    //         method: 'POST',
-    //         url: `${this.host}/api/customers/`,
-    //         data,
-    //         headers,
-    //     }
+        message = Object.assign({}, message)
+        message.library = 'lotus-node'
 
-    //     if (this.timeout) {
-    //         req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
-    //     }
+        const headers = { 'X-API-KEY': this.apiKey }
+        if (typeof window === 'undefined') {
+            headers['user-agent'] = `lotus-node`
+        }
+        if (message.library) {
+            delete message.library
+        }
 
-    //     axios(req)
-    //         .then(() => done())
-    //         .catch((err) => {
-    //             if (err.response) {
-    //                 const error = new Error(err.response.statusText)
-    //                 return done(error)
-    //             }
-
-    //             done(err)
-    //         })
-    // }
+        const data = {
+            name: message.name,
+            customer_id: message.customer_id,
+        }
+        const req = {
+            method: 'POST',
+            url: `${this.host}/api/customers/`,
+            data,
+            headers,
+        }
+        if (this.timeout) {
+            req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
+        }
+        console.log(req)
+        axios(req)
+            .then(() => {})
+            .catch((err) => {
+                if (err.response) {
+                    const error = new Error(err.response.statusText)
+                    console.log(error)
+                }
+            })
+    }
 
     /**
      * Send a trackEvent `message`.
@@ -111,7 +123,6 @@ class Lotus {
         })
 
         const apiMessage = Object.assign({}, message, { properties })
-        console.log(323)
 
         this.enqueue('trackEvent', apiMessage, callback)
 
@@ -140,9 +151,9 @@ class Lotus {
         message.library = 'lotus-node'
 
         if (!message.timestamp) {
-            message.timestamp = new Date()
+            message.time_created = new Date()
         } else {
-            message.timestamp = message.timestamp
+            message.time_created = message.timestamp
         }
 
         if (message.idempotencyId) {
@@ -151,7 +162,7 @@ class Lotus {
         }
 
         if (message.customerId) {
-            message.customer = message.customerId
+            message.customer_id = message.customerId
             delete message.customerId
         }
 
@@ -229,13 +240,14 @@ class Lotus {
         }
 
         axios(req)
-            .then(() => done())
+            .then((res) => {
+                done()
+            })
             .catch((err) => {
                 if (err.response) {
                     const error = new Error(err.response.statusText)
-                    return done(error)
+                    return done(err.response.data)
                 }
-
                 done(err)
             })
     }

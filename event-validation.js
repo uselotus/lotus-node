@@ -39,7 +39,7 @@ var genericValidationRules = {
     idempotencyId: 'string',
     properties: 'object',
     customerId: 'string',
-    timestamp: 'date',
+    time_created: 'date',
     eventName: 'string',
 }
 

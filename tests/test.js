@@ -114,8 +114,8 @@ test('keep the flushAt option above zero', (t) => {
 test('enqueue - add a message to the queue', (t) => {
     const client = createClient()
 
-    const timestamp = new Date()
-    client.enqueue('type', { timestamp }, noop)
+    const time_created = new Date()
+    client.enqueue('type', { time_created }, noop)
 
     t.is(client.queue.length, 1)
 
@@ -125,7 +125,7 @@ test('enqueue - add a message to the queue', (t) => {
     // t.regex(item.message.messageId, /node-[a-zA-Z0-9]{32}/)
     t.deepEqual(item, {
         message: {
-            timestamp,
+            time_created,
             library: 'lotus-node',
             type: 'type',
         },
@@ -291,7 +291,7 @@ test('trackEvent --enqueue and flush many messages', async (t) => {
 
     const message1 = {
         eventName: 'test',
-        timestamp: new Date(),
+        time_created: new Date(),
         customerId: '123',
         idempotencyId: '123',
         properties: { test: 'test' },
@@ -301,7 +301,7 @@ test('trackEvent --enqueue and flush many messages', async (t) => {
 
     const message2 = {
         eventName: 'test',
-        timestamp: new Date(),
+        time_created: new Date(),
         customerId: '123',
         idempotencyId: '12453',
         properties: { test: 'test' },
