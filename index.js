@@ -65,11 +65,87 @@ class Lotus {
     }
 
     /**
+     * Create a new Subscription.
+     *
+     * @param {Object} message
+     *
+     */
+    cancelSubscription(message, callback) {
+        // this._validate(message, 'subscription')
+        message = Object.assign({}, message)
+        message.library = 'lotus-node'
+
+        if (message.library) {
+            delete message.library
+        }
+
+        const data = {
+            customer: message.customer_id,
+            billing_plan: message.plan_id,
+        }
+        const req = {
+            method: 'POST',
+            url: `${this.host}/api/subscriptions/`,
+            data,
+            headers,
+        }
+        if (this.timeout) {
+            req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
+        }
+        // axios(req)
+        //     .then(() => {})
+        //     .catch((err) => {
+        //         if (err.response) {
+        //             const error = new Error(err.response.statusText)
+        //             console.log(error)
+        //         }
+        //     })
+    }
+
+    /**
+     * Create a new Subscription.
+     *
+     * @param {Object} message
+     *
+     */
+    createSubscription(message, callback) {
+        // this._validate(message, 'subscription')
+        message = Object.assign({}, message)
+        message.library = 'lotus-node'
+
+        if (message.library) {
+            delete message.library
+        }
+
+        const data = {
+            customer: message.customer_id,
+            billing_plan: message.plan_id,
+        }
+        const req = {
+            method: 'POST',
+            url: `${this.host}/api/subscriptions/`,
+            data,
+            headers,
+        }
+        if (this.timeout) {
+            req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
+        }
+        axios(req)
+            .then(() => {})
+            .catch((err) => {
+                if (err.response) {
+                    const error = new Error(err.response.statusText)
+                    console.log(error)
+                }
+            })
+    }
+
+    /**
     //  * Create a new Customer or update an existing Customer.
     //  * @param {Object} message
     //  *
     //  */
-    customer(message, callback) {
+    createCustomer(message, callback) {
         // customerValidate(messsage, 'customer')
 
         message = Object.assign({}, message)
@@ -96,7 +172,6 @@ class Lotus {
         if (this.timeout) {
             req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
         }
-        console.log(req)
         axios(req)
             .then(() => {})
             .catch((err) => {
@@ -160,6 +235,9 @@ class Lotus {
             message.idempotency_id = message.idempotencyId
             delete message.idempotencyId
         }
+        // } else {
+        //     message.idempotency_id = uuidv1()
+        // }
 
         if (message.customerId) {
             message.customer_id = message.customerId

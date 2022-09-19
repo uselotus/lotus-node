@@ -242,6 +242,15 @@ test('flush - send messages', async (t) => {
     t.false(callbackC.called)
 })
 
+test('customer - create object', async (t) => {
+    const client = createClient()
+
+    const object = client.createCustomer({ customer_id: '123', name: 'Jojo' })
+    console.log(object)
+
+    await t.true()
+})
+
 test('flush - respond with an error', async (t) => {
     const client = createClient()
     const callback = spy()
