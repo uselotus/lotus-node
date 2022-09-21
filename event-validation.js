@@ -28,7 +28,9 @@ function eventValidation(event, type) {
  */
 
 function validateTrackEventEvent(event) {
-    assert(event.idempotencyId, 'You must pass an "idempotencyId".')
+    assert(event.idempotency_id, 'You must pass an "idempotency_id".')
+    assert(event.event_name, 'You must pass an "event_name".')
+    assert(event.customer_id, 'You must pass a "customer_id".')
 }
 
 /**
@@ -36,11 +38,11 @@ function validateTrackEventEvent(event) {
  */
 
 var genericValidationRules = {
-    idempotencyId: 'string',
+    idempotency_id: 'string',
     properties: 'object',
-    customerId: 'string',
+    customer_id: 'string',
     time_created: 'date',
-    eventName: 'string',
+    event_name: 'string',
 }
 
 /**

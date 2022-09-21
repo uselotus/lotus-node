@@ -1,5 +1,6 @@
 'use strict'
 
+const { v1: uuidv1 } = require('uuid')
 const assert = require('assert')
 const removeSlash = require('remove-trailing-slash')
 const axios = require('axios')
@@ -225,7 +226,7 @@ class Lotus {
         message.type = type
         message.library = 'lotus-node'
 
-        if (!message.timestamp) {
+        if (message.timestamp === undefined) {
             message.time_created = new Date()
         } else {
             message.time_created = message.timestamp
@@ -234,10 +235,9 @@ class Lotus {
         if (message.idempotencyId) {
             message.idempotency_id = message.idempotencyId
             delete message.idempotencyId
+        } else if (message.idempotency_id === undefined) {
+            message.idempotency_id = uuidv1()
         }
-        // } else {
-        //     message.idempotency_id = uuidv1()
-        // }
 
         if (message.customerId) {
             message.customer_id = message.customerId
