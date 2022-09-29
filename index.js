@@ -1,6 +1,6 @@
 'use strict'
 
-const { v1: uuidv1 } = require('uuid')
+const { v1: uuidv4 } = require('uuid')
 const assert = require('assert')
 const removeSlash = require('remove-trailing-slash')
 const axios = require('axios')
@@ -10,7 +10,7 @@ const looselyValidate = require('./event-validation')
 // const customerValidation = require('./customer-validation')
 
 const setImmediate = global.setImmediate || process.nextTick.bind(process)
-const noop = () => {}
+const noop = () => { }
 
 const FIVE_MINUTES = 5 * 60 * 1000
 class Lotus {
@@ -81,26 +81,70 @@ class Lotus {
         }
 
         const data = {
-            customer: message.customer_id,
-            billing_plan: message.plan_id,
+            subscription_uid: message.subscription_uid,
+            bill_now: message.bill_now,
+            revoke_access: message.revoke_access,
         }
         const req = {
             method: 'POST',
-            url: `${this.host}/api/subscriptions/`,
+            url: `${this.host}/api/cancel_subscription/`,
             data,
             headers,
         }
         if (this.timeout) {
             req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
         }
-        // axios(req)
-        //     .then(() => {})
-        //     .catch((err) => {
-        //         if (err.response) {
-        //             const error = new Error(err.response.statusText)
-        //             console.log(error)
-        //         }
-        //     })
+        axios(req)
+            .then(() => { })
+            .catch((err) => {
+                if (err.response) {
+                    const error = new Error(err.response.statusText)
+                    console.log(error)
+                }
+            })
+    }
+
+    /**
+     * Get customer access. 
+     *
+     * @param {Object} message
+     *
+     */
+    getCustomerAccess(message, callback) {
+        // this._validate(message, 'subscription')
+        message = Object.assign({}, message)
+        message.library = 'lotus-node'
+
+        if (message.library) {
+            delete message.library
+        }
+
+        const data = {
+            customer_id: message.customer_id,
+        }
+        if (message.event_name) {
+            data.event_name = message.event_name
+        }
+        else if (message.feature_name) {
+            data.feature_name = message.feature_name
+        }
+        const req = {
+            method: 'GET',
+            url: `${this.host}/api/customer_access/`,
+            data,
+            headers,
+        }
+        if (this.timeout) {
+            req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
+        }
+        axios(req)
+            .then(() => { })
+            .catch((err) => {
+                if (err.response) {
+                    const error = new Error(err.response.statusText)
+                    console.log(error)
+                }
+            })
     }
 
     /**
@@ -119,9 +163,26 @@ class Lotus {
         }
 
         const data = {
-            customer: message.customer_id,
-            billing_plan: message.plan_id,
+            customer_id: message.customer_id,
+            billing_plan_id: message.billing_plan_id,
+            start_date: message.start_date,
         }
+        if (message.end_date) {
+            data.end_date = message.end_date
+        }
+        if (message.status) {
+            data.status = message.status
+        }
+        if (message.auto_renew) {
+            data.auto_renew = message.auto_renew
+        }
+        if (message.is_new) {
+            data.is_new = message.is_new
+        }
+        if (message.subscription_uid) {
+            data.subscription_uid = message.subscription_uid
+        }
+
         const req = {
             method: 'POST',
             url: `${this.host}/api/subscriptions/`,
@@ -132,7 +193,7 @@ class Lotus {
             req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
         }
         axios(req)
-            .then(() => {})
+            .then(() => { })
             .catch((err) => {
                 if (err.response) {
                     const error = new Error(err.response.statusText)
@@ -164,6 +225,9 @@ class Lotus {
             name: message.name,
             customer_id: message.customer_id,
         }
+        if (message.balance) {
+            data.balance = message.balance
+        }
         const req = {
             method: 'POST',
             url: `${this.host}/api/customers/`,
@@ -174,7 +238,7 @@ class Lotus {
             req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
         }
         axios(req)
-            .then(() => {})
+            .then(() => { })
             .catch((err) => {
                 if (err.response) {
                     const error = new Error(err.response.statusText)
@@ -236,7 +300,7 @@ class Lotus {
             message.idempotency_id = message.idempotencyId
             delete message.idempotencyId
         } else if (message.idempotency_id === undefined) {
-            message.idempotency_id = uuidv1()
+            message.idempotency_id = uuidv4()
         }
 
         if (message.customerId) {
