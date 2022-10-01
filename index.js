@@ -124,6 +124,7 @@ class Lotus {
         }
         if (message.event_name) {
             data.event_name = message.event_name
+            data.event_limit_type = message.event_limit_type
         }
         else if (message.feature_name) {
             data.feature_name = message.feature_name
