@@ -110,7 +110,9 @@ class Lotus {
             req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
         }
         axios(req)
-            .then(() => {})
+            .then((res) => {
+                return res.data
+            })
             .catch((err) => {
                 if (err.response) {
                     const error = new Error(err.response.statusText)
@@ -197,7 +199,9 @@ class Lotus {
             req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
         }
         axios(req)
-            .then(() => {})
+            .then((res) => {
+                return res.data
+            })
             .catch((err) => {
                 if (err.response) {
                     const error = new Error(err.response.statusText)
@@ -231,7 +235,9 @@ class Lotus {
             req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
         }
         axios(req)
-            .then(() => {})
+            .then((res) => {
+                return res.data
+            })
             .catch((err) => {
                 if (err.response) {
                     const error = new Error(err.response.statusText)
@@ -265,7 +271,9 @@ class Lotus {
             req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
         }
         axios(req)
-            .then(() => {})
+            .then((res) => {
+                return res.data
+            })
             .catch((err) => {
                 if (err.response) {
                     const error = new Error(err.response.statusText)
@@ -321,9 +329,11 @@ class Lotus {
             req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
         }
         axios(req)
-            .then(() => {})
+            .then((res) => {
+                return res.data
+            })
             .catch((err) => {
-                if (err.response) {
+                if (err.resposnse) {
                     const error = new Error(err.response.statusText)
                     console.log(error)
                 }
@@ -405,7 +415,9 @@ class Lotus {
             req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
         }
         axios(req)
-            .then(() => {})
+            .then((res) => {
+                return res.data
+            })
             .catch((err) => {
                 if (err.response) {
                     const error = new Error(err.response.statusText)
