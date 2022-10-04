@@ -66,6 +66,266 @@ class Lotus {
     }
 
     /**
+     * Send a trackEvent `message`.
+     *
+     * @param {Object} message
+     * @param {Function} [callback] (optional)
+     * @return {Lotus}
+     */
+    trackEvent(message, callback) {
+        this._validate(message, 'trackEvent')
+
+        const properties = Object.assign({}, message.properties, {
+            $lib: 'lotus-node',
+        })
+
+        const apiMessage = Object.assign({}, message, { properties })
+
+        this.enqueue('trackEvent', apiMessage, callback)
+
+        return this
+    }
+
+    /**
+     * Get customer access. 
+     *
+     * @param {Object} message
+     *
+     */
+    getCustomers(message, callback) {
+        // this._validate(message, 'subscription')
+        message = Object.assign({}, message)
+        message.library = 'lotus-node'
+
+        if (message.library) {
+            delete message.library
+        }
+
+        const req = {
+            method: 'GET',
+            url: `${this.host}/api/customers/`,
+            data,
+            headers,
+        }
+        if (this.timeout) {
+            req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
+        }
+        axios(req)
+            .then(() => { })
+            .catch((err) => {
+                if (err.response) {
+                    const error = new Error(err.response.statusText)
+                    console.log(error)
+                }
+            })
+    }
+
+    /**
+    //  * Create a new Customer or update an existing Customer.
+    //  * @param {Object} message
+    //  *
+    //  */
+    createCustomer(message, callback) {
+        // customerValidate(messsage, 'customer')
+
+        message = Object.assign({}, message)
+        message.library = 'lotus-node'
+
+        const headers = { 'X-API-KEY': this.apiKey }
+        if (typeof window === 'undefined') {
+            headers['user-agent'] = `lotus-node`
+        }
+        if (message.library) {
+            delete message.library
+        }
+
+        const data = {
+            name: message.name,
+            customer_id: message.customer_id,
+        }
+        if (message.balance) {
+            data.balance = message.balance
+        }
+        const req = {
+            method: 'POST',
+            url: `${this.host}/api/customers/`,
+            data,
+            headers,
+        }
+        if (this.timeout) {
+            req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
+        }
+        axios(req)
+            .then(() => { })
+            .catch((err) => {
+                if (err.response) {
+                    const error = new Error(err.response.statusText)
+                    console.log(error)
+                }
+            })
+    }
+
+    /**
+ * Get customer access. 
+ *
+ * @param {Object} message
+ *
+ */
+    getCurrentUsage(message, callback) {
+        // this._validate(message, 'subscription')
+        message = Object.assign({}, message)
+        message.library = 'lotus-node'
+
+        if (message.library) {
+            delete message.library
+        }
+
+        const data = {
+            customer_id: message.customer_id,
+        }
+        const req = {
+            method: 'GET',
+            url: `${this.host}/api/draft_invoice/`,
+            data,
+            headers,
+        }
+        if (this.timeout) {
+            req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
+        }
+        axios(req)
+            .then(() => { })
+            .catch((err) => {
+                if (err.response) {
+                    const error = new Error(err.response.statusText)
+                    console.log(error)
+                }
+            })
+    }
+
+    /**
+     * Get customer access. 
+     *
+     * @param {Object} message
+     *
+     */
+    getPlans(message, callback) {
+        // this._validate(message, 'subscription')
+        message = Object.assign({}, message)
+        message.library = 'lotus-node'
+
+        if (message.library) {
+            delete message.library
+        }
+
+        const req = {
+            method: 'GET',
+            url: `${this.host}/api/plans/`,
+            data,
+            headers,
+        }
+        if (this.timeout) {
+            req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
+        }
+        axios(req)
+            .then(() => { })
+            .catch((err) => {
+                if (err.response) {
+                    const error = new Error(err.response.statusText)
+                    console.log(error)
+                }
+            })
+    }
+
+    /**
+ * Get customer access. 
+ *
+ * @param {Object} message
+ *
+ */
+    getSubscriptions(message, callback) {
+        // this._validate(message, 'subscription')
+        message = Object.assign({}, message)
+        message.library = 'lotus-node'
+
+        if (message.library) {
+            delete message.library
+        }
+
+        const req = {
+            method: 'GET',
+            url: `${this.host}/api/subscriptions/`,
+            data,
+            headers,
+        }
+        if (this.timeout) {
+            req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
+        }
+        axios(req)
+            .then(() => { })
+            .catch((err) => {
+                if (err.response) {
+                    const error = new Error(err.response.statusText)
+                    console.log(error)
+                }
+            })
+    }
+
+    /**
+     * Create a new Subscription.
+     *
+     * @param {Object} message
+     *
+     */
+    createSubscription(message, callback) {
+        // this._validate(message, 'subscription')
+        message = Object.assign({}, message)
+        message.library = 'lotus-node'
+
+        if (message.library) {
+            delete message.library
+        }
+
+        const data = {
+            customer_id: message.customer_id,
+            billing_plan_id: message.billing_plan_id,
+            start_date: message.start_date,
+        }
+        if (message.end_date) {
+            data.end_date = message.end_date
+        }
+        if (message.status) {
+            data.status = message.status
+        }
+        if (message.auto_renew) {
+            data.auto_renew = message.auto_renew
+        }
+        if (message.is_new) {
+            data.is_new = message.is_new
+        }
+        if (message.subscription_id) {
+            data.subscription_id = message.subscription_id
+        }
+
+        const req = {
+            method: 'POST',
+            url: `${this.host}/api/subscriptions/`,
+            data,
+            headers,
+        }
+        if (this.timeout) {
+            req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
+        }
+        axios(req)
+            .then(() => { })
+            .catch((err) => {
+                if (err.response) {
+                    const error = new Error(err.response.statusText)
+                    console.log(error)
+                }
+            })
+    }
+
+    /**
      * Create a new Subscription.
      *
      * @param {Object} message
@@ -81,7 +341,7 @@ class Lotus {
         }
 
         const data = {
-            subscription_uid: message.subscription_uid,
+            subscription_id: message.subscription_id,
             bill_now: message.bill_now,
             revoke_access: message.revoke_access,
         }
@@ -148,127 +408,6 @@ class Lotus {
             })
     }
 
-    /**
-     * Create a new Subscription.
-     *
-     * @param {Object} message
-     *
-     */
-    createSubscription(message, callback) {
-        // this._validate(message, 'subscription')
-        message = Object.assign({}, message)
-        message.library = 'lotus-node'
-
-        if (message.library) {
-            delete message.library
-        }
-
-        const data = {
-            customer_id: message.customer_id,
-            billing_plan_id: message.billing_plan_id,
-            start_date: message.start_date,
-        }
-        if (message.end_date) {
-            data.end_date = message.end_date
-        }
-        if (message.status) {
-            data.status = message.status
-        }
-        if (message.auto_renew) {
-            data.auto_renew = message.auto_renew
-        }
-        if (message.is_new) {
-            data.is_new = message.is_new
-        }
-        if (message.subscription_uid) {
-            data.subscription_uid = message.subscription_uid
-        }
-
-        const req = {
-            method: 'POST',
-            url: `${this.host}/api/subscriptions/`,
-            data,
-            headers,
-        }
-        if (this.timeout) {
-            req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
-        }
-        axios(req)
-            .then(() => { })
-            .catch((err) => {
-                if (err.response) {
-                    const error = new Error(err.response.statusText)
-                    console.log(error)
-                }
-            })
-    }
-
-    /**
-    //  * Create a new Customer or update an existing Customer.
-    //  * @param {Object} message
-    //  *
-    //  */
-    createCustomer(message, callback) {
-        // customerValidate(messsage, 'customer')
-
-        message = Object.assign({}, message)
-        message.library = 'lotus-node'
-
-        const headers = { 'X-API-KEY': this.apiKey }
-        if (typeof window === 'undefined') {
-            headers['user-agent'] = `lotus-node`
-        }
-        if (message.library) {
-            delete message.library
-        }
-
-        const data = {
-            name: message.name,
-            customer_id: message.customer_id,
-        }
-        if (message.balance) {
-            data.balance = message.balance
-        }
-        const req = {
-            method: 'POST',
-            url: `${this.host}/api/customers/`,
-            data,
-            headers,
-        }
-        if (this.timeout) {
-            req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
-        }
-        axios(req)
-            .then(() => { })
-            .catch((err) => {
-                if (err.response) {
-                    const error = new Error(err.response.statusText)
-                    console.log(error)
-                }
-            })
-    }
-
-    /**
-     * Send a trackEvent `message`.
-     *
-     * @param {Object} message
-     * @param {Function} [callback] (optional)
-     * @return {Lotus}
-     */
-
-    trackEvent(message, callback) {
-        this._validate(message, 'trackEvent')
-
-        const properties = Object.assign({}, message.properties, {
-            $lib: 'lotus-node',
-        })
-
-        const apiMessage = Object.assign({}, message, { properties })
-
-        this.enqueue('trackEvent', apiMessage, callback)
-
-        return this
-    }
 
     /**
      * Add a `message` of type `type` to the queue and
@@ -279,7 +418,6 @@ class Lotus {
      * @param {Function} [callback] (optional)
      * @api private
      */
-
     enqueue(type, message, callback) {
         callback = callback || noop
 
@@ -336,7 +474,6 @@ class Lotus {
      * @param {Function} [callback] (optional)
      * @return {Lotus}
      */
-
     flush(callback) {
         callback = callback || noop
 
