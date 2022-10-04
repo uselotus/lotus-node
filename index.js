@@ -10,7 +10,7 @@ const looselyValidate = require('./event-validation')
 // const customerValidation = require('./customer-validation')
 
 const setImmediate = global.setImmediate || process.nextTick.bind(process)
-const noop = () => { }
+const noop = () => {}
 
 const FIVE_MINUTES = 5 * 60 * 1000
 class Lotus {
@@ -87,7 +87,7 @@ class Lotus {
     }
 
     /**
-     * Get customer access. 
+     * Get customer access.
      *
      * @param {Object} message
      *
@@ -96,7 +96,7 @@ class Lotus {
         // this._validate(message, 'subscription')
         message = Object.assign({}, message)
         message.library = 'lotus-node'
-
+        const headers = { 'X-API-KEY': this.apiKey }
         if (message.library) {
             delete message.library
         }
@@ -104,14 +104,13 @@ class Lotus {
         const req = {
             method: 'GET',
             url: `${this.host}/api/customers/`,
-            data,
             headers,
         }
         if (this.timeout) {
             req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
         }
         axios(req)
-            .then(() => { })
+            .then(() => {})
             .catch((err) => {
                 if (err.response) {
                     const error = new Error(err.response.statusText)
@@ -140,23 +139,28 @@ class Lotus {
         }
 
         const data = {
-            name: message.name,
+            customer_name: message.customer_name,
             customer_id: message.customer_id,
         }
+
+        if (message.currency) {
+            data.currency = message.currency
+        }
+
         if (message.balance) {
             data.balance = message.balance
         }
         const req = {
             method: 'POST',
             url: `${this.host}/api/customers/`,
-            data,
-            headers,
+            data: data,
+            headers: headers,
         }
         if (this.timeout) {
             req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
         }
         axios(req)
-            .then(() => { })
+            .then(() => {})
             .catch((err) => {
                 if (err.response) {
                     const error = new Error(err.response.statusText)
@@ -166,15 +170,16 @@ class Lotus {
     }
 
     /**
- * Get customer access. 
- *
- * @param {Object} message
- *
- */
+     * Get customer access.
+     *
+     * @param {Object} message
+     *
+     */
     getCurrentUsage(message, callback) {
         // this._validate(message, 'subscription')
         message = Object.assign({}, message)
         message.library = 'lotus-node'
+        const headers = { 'X-API-KEY': this.apiKey }
 
         if (message.library) {
             delete message.library
@@ -186,14 +191,13 @@ class Lotus {
         const req = {
             method: 'GET',
             url: `${this.host}/api/draft_invoice/`,
-            data,
             headers,
         }
         if (this.timeout) {
             req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
         }
         axios(req)
-            .then(() => { })
+            .then(() => {})
             .catch((err) => {
                 if (err.response) {
                     const error = new Error(err.response.statusText)
@@ -203,7 +207,7 @@ class Lotus {
     }
 
     /**
-     * Get customer access. 
+     * Get customer access.
      *
      * @param {Object} message
      *
@@ -212,6 +216,7 @@ class Lotus {
         // this._validate(message, 'subscription')
         message = Object.assign({}, message)
         message.library = 'lotus-node'
+        const headers = { 'X-API-KEY': this.apiKey }
 
         if (message.library) {
             delete message.library
@@ -220,14 +225,13 @@ class Lotus {
         const req = {
             method: 'GET',
             url: `${this.host}/api/plans/`,
-            data,
             headers,
         }
         if (this.timeout) {
             req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
         }
         axios(req)
-            .then(() => { })
+            .then(() => {})
             .catch((err) => {
                 if (err.response) {
                     const error = new Error(err.response.statusText)
@@ -237,15 +241,16 @@ class Lotus {
     }
 
     /**
- * Get customer access. 
- *
- * @param {Object} message
- *
- */
+     * Get customer access.
+     *
+     * @param {Object} message
+     *
+     */
     getSubscriptions(message, callback) {
         // this._validate(message, 'subscription')
         message = Object.assign({}, message)
         message.library = 'lotus-node'
+        const headers = { 'X-API-KEY': this.apiKey }
 
         if (message.library) {
             delete message.library
@@ -254,14 +259,13 @@ class Lotus {
         const req = {
             method: 'GET',
             url: `${this.host}/api/subscriptions/`,
-            data,
             headers,
         }
         if (this.timeout) {
             req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
         }
         axios(req)
-            .then(() => { })
+            .then(() => {})
             .catch((err) => {
                 if (err.response) {
                     const error = new Error(err.response.statusText)
@@ -280,6 +284,7 @@ class Lotus {
         // this._validate(message, 'subscription')
         message = Object.assign({}, message)
         message.library = 'lotus-node'
+        const headers = { 'X-API-KEY': this.apiKey }
 
         if (message.library) {
             delete message.library
@@ -316,7 +321,7 @@ class Lotus {
             req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
         }
         axios(req)
-            .then(() => { })
+            .then(() => {})
             .catch((err) => {
                 if (err.response) {
                     const error = new Error(err.response.statusText)
@@ -335,6 +340,7 @@ class Lotus {
         // this._validate(message, 'subscription')
         message = Object.assign({}, message)
         message.library = 'lotus-node'
+        const headers = { 'X-API-KEY': this.apiKey }
 
         if (message.library) {
             delete message.library
@@ -355,7 +361,7 @@ class Lotus {
             req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
         }
         axios(req)
-            .then(() => { })
+            .then(() => {})
             .catch((err) => {
                 if (err.response) {
                     const error = new Error(err.response.statusText)
@@ -365,7 +371,7 @@ class Lotus {
     }
 
     /**
-     * Get customer access. 
+     * Get customer access.
      *
      * @param {Object} message
      *
@@ -374,6 +380,7 @@ class Lotus {
         // this._validate(message, 'subscription')
         message = Object.assign({}, message)
         message.library = 'lotus-node'
+        const headers = { 'X-API-KEY': this.apiKey }
 
         if (message.library) {
             delete message.library
@@ -385,8 +392,7 @@ class Lotus {
         if (message.event_name) {
             data.event_name = message.event_name
             data.event_limit_type = message.event_limit_type
-        }
-        else if (message.feature_name) {
+        } else if (message.feature_name) {
             data.feature_name = message.feature_name
         }
         const req = {
@@ -399,7 +405,7 @@ class Lotus {
             req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
         }
         axios(req)
-            .then(() => { })
+            .then(() => {})
             .catch((err) => {
                 if (err.response) {
                     const error = new Error(err.response.statusText)
@@ -407,7 +413,6 @@ class Lotus {
                 }
             })
     }
-
 
     /**
      * Add a `message` of type `type` to the queue and
