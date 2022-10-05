@@ -13,6 +13,12 @@ const setImmediate = global.setImmediate || process.nextTick.bind(process)
 const noop = () => {}
 
 const FIVE_MINUTES = 5 * 60 * 1000
+
+const axiosTest = async (req) => {
+    const response = await axios(req)
+    return response.data
+}
+
 class Lotus {
     /**
      * Initialize a new `Lotus` with your Lotus organization's `apiKey` and an
@@ -90,9 +96,9 @@ class Lotus {
      * Get customer access.
      *
      * @param {Object} message
-     *
+     * @return {Object}
      */
-    getCustomers(message, callback) {
+    async getCustomers(message, callback) {
         // this._validate(message, 'subscription')
         message = Object.assign({}, message)
         message.library = 'lotus-node'
@@ -109,16 +115,10 @@ class Lotus {
         if (this.timeout) {
             req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
         }
-        axios(req)
-            .then((res) => {
-                return res.data
-            })
-            .catch((err) => {
-                if (err.response) {
-                    const error = new Error(err.response.statusText)
-                    console.log(error)
-                }
-            })
+
+        const returndata = axiosTest(req)
+
+        return returndata
     }
 
     /**
@@ -187,27 +187,21 @@ class Lotus {
             delete message.library
         }
 
-        const data = {
+        const params = {
             customer_id: message.customer_id,
         }
         const req = {
             method: 'GET',
             url: `${this.host}/api/draft_invoice/`,
             headers,
+            params,
         }
         if (this.timeout) {
             req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
         }
-        axios(req)
-            .then((res) => {
-                return res.data
-            })
-            .catch((err) => {
-                if (err.response) {
-                    const error = new Error(err.response.statusText)
-                    console.log(error)
-                }
-            })
+        const returndata = axiosTest(req)
+
+        return returndata
     }
 
     /**
@@ -234,16 +228,12 @@ class Lotus {
         if (this.timeout) {
             req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
         }
-        axios(req)
-            .then((res) => {
-                return res.data
-            })
-            .catch((err) => {
-                if (err.response) {
-                    const error = new Error(err.response.statusText)
-                    console.log(error)
-                }
-            })
+
+        let data = axios(req).then((res) => {
+            return res.data
+        })
+
+        return data
     }
 
     /**
@@ -252,7 +242,7 @@ class Lotus {
      * @param {Object} message
      *
      */
-    getSubscriptions(message, callback) {
+    async getSubscriptions(message, callback) {
         // this._validate(message, 'subscription')
         message = Object.assign({}, message)
         message.library = 'lotus-node'
@@ -270,16 +260,9 @@ class Lotus {
         if (this.timeout) {
             req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
         }
-        axios(req)
-            .then((res) => {
-                return res.data
-            })
-            .catch((err) => {
-                if (err.response) {
-                    const error = new Error(err.response.statusText)
-                    console.log(error)
-                }
-            })
+        const returndata = axiosTest(req)
+
+        return returndata
     }
 
     /**
@@ -328,9 +311,10 @@ class Lotus {
         if (this.timeout) {
             req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
         }
+        let returndata
         axios(req)
-            .then((res) => {
-                return res.data
+            .then(function (res) {
+                returndata = res.data
             })
             .catch((err) => {
                 if (err.resposnse) {
@@ -338,6 +322,7 @@ class Lotus {
                     console.log(error)
                 }
             })
+        return returndata
     }
 
     /**
@@ -396,34 +381,27 @@ class Lotus {
             delete message.library
         }
 
-        const data = {
+        const params = {
             customer_id: message.customer_id,
         }
         if (message.event_name) {
-            data.event_name = message.event_name
-            data.event_limit_type = message.event_limit_type
+            params.event_name = message.event_name
+            params.event_limit_type = message.event_limit_type
         } else if (message.feature_name) {
-            data.feature_name = message.feature_name
+            params.feature_name = message.feature_name
         }
         const req = {
             method: 'GET',
             url: `${this.host}/api/customer_access/`,
-            data,
+            params,
             headers,
         }
         if (this.timeout) {
             req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
         }
-        axios(req)
-            .then((res) => {
-                return res.data
-            })
-            .catch((err) => {
-                if (err.response) {
-                    const error = new Error(err.response.statusText)
-                    console.log(error)
-                }
-            })
+        const returndata = axiosTest(req)
+
+        return returndata
     }
 
     /**
