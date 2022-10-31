@@ -43,7 +43,6 @@ class Lotus {
         this.timeout = options.timeout || false
         this.flushAt = Math.max(options.flushAt, 1) || 20
         this.flushInterval = typeof options.flushInterval === 'number' ? options.flushInterval : 10000
-        this.flushed = false
 
         Object.defineProperty(this, 'enable', {
             configurable: false,
@@ -447,12 +446,6 @@ class Lotus {
             delete message.eventName
         }
         this.queue.push({ message, callback })
-
-        if (!this.flushed) {
-            this.flushed = true
-            this.flush()
-            return
-        }
 
         if (this.queue.length >= this.flushAt) {
             this.flush()
