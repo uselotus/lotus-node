@@ -125,10 +125,9 @@ class Lotus {
         delete message.customerId;
 
         const headers = { 'X-API-KEY': this.apiKey }
-        // @todo We might need to change the url to `/customer_detail/customer_id=${customer_id}`
         const req = {
             method: 'GET',
-            url: `${this.host}/api/customer_detail?customer_id=${message.customer_id}`,
+            url: `${this.host}/api/customer_detail/${message.customer_id}`,
             headers,
         }
 
@@ -254,7 +253,7 @@ class Lotus {
         return returndata
     }
 
-
+    // @todo the parameters are not updated
     /**
      * Cancel a Subscription.
      *
@@ -262,7 +261,7 @@ class Lotus {
      *
      */
     cancelSubscription(message, callback) {
-        // this._validate(message, 'subscription')
+        this._validate(message, ValidateEventType.cancelSubscription)
         message = Object.assign({}, message)
         message.library = 'lotus-node'
         const headers = { 'X-API-KEY': this.apiKey }
@@ -274,7 +273,7 @@ class Lotus {
         }
         const req = {
             method: 'PATCH',
-            url: `${this.host}/api/cancel_subscription/`,
+            url: `${this.host}/api/subscriptions`,
             data,
             headers,
         }
@@ -289,6 +288,112 @@ class Lotus {
                     console.log(error)
                 }
             })
+    }
+
+    /**
+     * Get all subscriptions.
+     *
+     * @param {Object} message
+     *
+     */
+    async getAllSubscriptions(message, callback) {
+        message = Object.assign({}, message)
+        message.library = 'lotus-node'
+        const headers = { 'X-API-KEY': this.apiKey }
+        const req = {
+            method: 'GET',
+            url: `${this.host}/api/subscriptions/`,
+            headers,
+        }
+        if (this.timeout) {
+            req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
+        }
+        return axiosTest(req)
+    }
+
+    /**
+     * Get subscription details. subscription_id
+     *
+     * @param {Object} message
+     *
+     */
+    async getSubscriptionDetails(message, callback) {
+        this._validate(message, ValidateEventType.subscriptionDetails)
+        message = Object.assign({}, message)
+        message.library = 'lotus-node'
+        const headers = { 'X-API-KEY': this.apiKey }
+
+        message.subscription_id = message.subscriptionId || message.subscription_id
+        delete message.subscriptionId;
+        const req = {
+            method: 'GET',
+            url: `${this.host}/api/subscriptions/${message.subscription_id}`,
+            headers,
+        }
+        if (this.timeout) {
+            req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
+        }
+        return axiosTest(req)
+    }
+
+    /**
+     * Get All plans.
+     *
+     * @param {Object} message
+     *
+     */
+    async getAllPlans(message, callback) {
+        message = Object.assign({}, message)
+        message.library = 'lotus-node'
+        const headers = { 'X-API-KEY': this.apiKey }
+
+        const req = {
+            method: 'GET',
+            url: `${this.host}/api/plans/`,
+            headers,
+        }
+        if (this.timeout) {
+            req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
+        }
+
+        return axios(req).then((res) => {
+            return res.data
+        })
+    }
+
+    /**
+     * Get customer access.
+     *
+     * @param {Object} message
+     *
+     */
+    async getCustomerAccess(message, callback) {
+        this._validate(message, ValidateEventType.customerAccess)
+        message = Object.assign({}, message)
+        message.library = 'lotus-node'
+        const headers = { 'X-API-KEY': this.apiKey }
+
+        const params = {
+            customer_id: message.customer_id,
+        }
+        if (message.event_name) {
+            params.event_name = message.event_name
+            params.event_limit_type = message.event_limit_type
+        } else if (message.feature_name) {
+            params.feature_name = message.feature_name
+        }
+        const req = {
+            method: 'GET',
+            url: `${this.host}/api/customer_access/`,
+            params,
+            headers,
+        }
+        if (this.timeout) {
+            req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
+        }
+        const returndata = axiosTest(req)
+
+        return returndata
     }
 
     /**
@@ -354,74 +459,6 @@ class Lotus {
         })
 
         return data
-    }
-
-    /**
-     * Get customer access.
-     *
-     * @param {Object} message
-     *
-     */
-    async getSubscriptions(message, callback) {
-        // this._validate(message, 'subscription')
-        message = Object.assign({}, message)
-        message.library = 'lotus-node'
-        const headers = { 'X-API-KEY': this.apiKey }
-
-        if (message.library) {
-            delete message.library
-        }
-
-        const req = {
-            method: 'GET',
-            url: `${this.host}/api/subscriptions/`,
-            headers,
-        }
-        if (this.timeout) {
-            req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
-        }
-        const returndata = axiosTest(req)
-
-        return returndata
-    }
-
-    /**
-     * Get customer access.
-     *
-     * @param {Object} message
-     *
-     */
-    getCustomerAccess(message, callback) {
-        // this._validate(message, 'subscription')
-        message = Object.assign({}, message)
-        message.library = 'lotus-node'
-        const headers = { 'X-API-KEY': this.apiKey }
-
-        if (message.library) {
-            delete message.library
-        }
-
-        const params = {
-            customer_id: message.customer_id,
-        }
-        if (message.event_name) {
-            params.event_name = message.event_name
-            params.event_limit_type = message.event_limit_type
-        } else if (message.feature_name) {
-            params.feature_name = message.feature_name
-        }
-        const req = {
-            method: 'GET',
-            url: `${this.host}/api/customer_access/`,
-            params,
-            headers,
-        }
-        if (this.timeout) {
-            req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
-        }
-        const returndata = axiosTest(req)
-
-        return returndata
     }
 
     /**

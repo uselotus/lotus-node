@@ -7,6 +7,9 @@ export const ValidateEventType = {
     customerDetails : "customerDetails",
     createCustomer : "createCustomer",
     createSubscription : "createSubscription",
+    cancelSubscription : "cancelSubscription",
+    subscriptionDetails : "subscriptionDetails",
+    customerAccess : "customerAccess",
 }
 
 // Lotus messages can be a maximum of 32 kB.
@@ -31,6 +34,12 @@ function eventValidation(event, type) {
             return validateCreateCustomerEvent(event)
         case ValidateEventType.createSubscription:
             return validateCreateSubscriptionEvent(event)
+        case ValidateEventType.cancelSubscription:
+            return validateCancelSubscriptionEvent(event)
+        case ValidateEventType.subscriptionDetails:
+            return validateSubscriptionDetailsEvent(event)
+        case ValidateEventType.customerAccess:
+            return validateCustomerAccessEvent(event)
         default:
             assert(0, 'Invalid event type: "' + type + '"')
     }
@@ -70,6 +79,10 @@ function validateCreateCustomerEvent(event) {
     }
 }
 
+/**
+ * Validate a "CreateSubscription" event.
+ */
+
 function validateCreateSubscriptionEvent(event) {
     if (!("customer_id" in event || "customerId" in event)) {
         throw new Error("customer_id is a required key")
@@ -83,6 +96,38 @@ function validateCreateSubscriptionEvent(event) {
         throw new Error("start_date is a required key")
     }
 }
+
+/**
+ * Validate a "CancelSubscription" event.
+ */
+
+function validateCancelSubscriptionEvent(event) {
+    if (!("subscription_id" in event || "subscriptionId" in event)) {
+        throw new Error("subscription_id is a required key")
+    }
+}
+
+/**
+ * Validate a "SubscriptionDetails" event.
+ */
+
+function validateSubscriptionDetailsEvent(event) {
+    if (!("subscription_id" in event || "subscriptionId" in event)) {
+        throw new Error("subscription_id is a required key")
+    }
+}
+
+
+/**
+ * Validate a "Customer Access" event.
+ */
+
+function validateCustomerAccessEvent(event) {
+    if (!("customer_id" in event || "customerId" in event)) {
+        throw new Error("customer_id is a required key")
+    }
+}
+
 
 /**
  * Validation rules.
