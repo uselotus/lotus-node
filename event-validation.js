@@ -8,6 +8,7 @@ export const ValidateEventType = {
     createCustomer : "createCustomer",
     createSubscription : "createSubscription",
     cancelSubscription : "cancelSubscription",
+    changeSubscription : "changeSubscription",
     subscriptionDetails : "subscriptionDetails",
     customerAccess : "customerAccess",
 }
@@ -36,6 +37,8 @@ function eventValidation(event, type) {
             return validateCreateSubscriptionEvent(event)
         case ValidateEventType.cancelSubscription:
             return validateCancelSubscriptionEvent(event)
+        case ValidateEventType.changeSubscription:
+            return validateChangeSubscriptionEvent(event)
         case ValidateEventType.subscriptionDetails:
             return validateSubscriptionDetailsEvent(event)
         case ValidateEventType.customerAccess:
@@ -105,6 +108,23 @@ function validateCancelSubscriptionEvent(event) {
     if (!("subscription_id" in event || "subscriptionId" in event)) {
         throw new Error("subscription_id is a required key")
     }
+
+    const turn_off_auto_renew = event["turn_off_auto_renew"]
+    const replace_immediately_type = event["replace_immediately_type"]
+
+    if (turn_off_auto_renew &&  replace_immediately_type) {
+        throw new Error("Must provide either turn_off_auto_renew or replace_immediately_type")
+    }
+
+    if(!turn_off_auto_renew) {
+        const types = [
+            "end_current_subscription_and_bill",
+            "end_current_subscription_dont_bill",
+        ]
+        if(!types.includes(replace_immediately_type)) {
+            throw new Error("replace_immediately_type must be one of 'end_current_subscription_and_bill', 'end_current_subscription_dont_bill'")
+        }
+    }
 }
 
 /**
@@ -125,6 +145,48 @@ function validateSubscriptionDetailsEvent(event) {
 function validateCustomerAccessEvent(event) {
     if (!("customer_id" in event || "customerId" in event)) {
         throw new Error("customer_id is a required key")
+    }
+
+    if (!("event_limit_type" in event)) {
+        throw new Error("event_limit_type is a required key")
+    }
+
+    if (("event_name" in event) && ("feature_name" in event)) {
+        throw new Error("Can't provide both event_name and feature_name")
+    }
+
+    if (!("event_name" in event) && !("feature_name" in event)) {
+        throw new Error("Must provide event_name or feature_name")
+    }
+}
+
+/**
+ * Validate a "ChangeSubscription" event.
+ */
+
+function validateChangeSubscriptionEvent(event) {
+    if (!("subscription_id" in event || "subscriptionId" in event)) {
+        throw new Error("subscription_id is a required key")
+    }
+
+    if (!("plan_id" in event)) {
+        throw new Error("plan_id is a required key")
+    }
+
+    const replace_immediately_type = event["replace_immediately_type"]
+
+    const types = [
+        "end_current_subscription_and_bill",
+        "end_current_subscription_dont_bill",
+        "change_subscription_plan"
+    ]
+
+    if(!replace_immediately_type) {
+        throw new Error("replace_immediately_type is a required key")
+    }
+
+    if(!types.includes(replace_immediately_type)) {
+        throw new Error("Invalid replace_immediately_type")
     }
 }
 

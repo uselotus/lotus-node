@@ -195,7 +195,6 @@ class Lotus {
             })
     }
 
-
     /**
      * Create a new Subscription.
      *
@@ -253,7 +252,6 @@ class Lotus {
         return returndata
     }
 
-    // @todo the parameters are not updated
     /**
      * Cancel a Subscription.
      *
@@ -266,14 +264,61 @@ class Lotus {
         message.library = 'lotus-node'
         const headers = { 'X-API-KEY': this.apiKey }
 
-        const data = {
-            subscription_id: message.subscription_id,
-            bill_now: message.bill_now,
-            revoke_access: message.revoke_access,
+        const data = {}
+        const turn_off_auto_renew = message["turn_off_auto_renew"]
+        const replace_immediately_type = message["replace_immediately_type"]
+
+        if (turn_off_auto_renew) {
+            data["auto_renew"] = false
+        }else {
+            data["status"] = "ended"
+            data["replace_immediately_type"] = replace_immediately_type
         }
+
         const req = {
             method: 'PATCH',
-            url: `${this.host}/api/subscriptions`,
+            url: `${this.host}/api/subscriptions/${message.subscription_id}/`,
+            data,
+            headers,
+        }
+        if (this.timeout) {
+            req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
+        }
+        axios(req)
+            .then(() => {})
+            .catch((err) => {
+                if (err.response) {
+                    const error = new Error(err.response.statusText)
+                    console.log(error)
+                }
+            })
+    }
+
+    /**
+     * Change a Subscription.
+     *
+     * @param {Object} message
+     *
+     */
+    cancelSubscription(message, callback) {
+        this._validate(message, ValidateEventType.changeSubscription)
+        message = Object.assign({}, message)
+        message.library = 'lotus-node'
+        const headers = { 'X-API-KEY': this.apiKey }
+
+        const turn_off_auto_renew = message["turn_off_auto_renew"]
+        const replace_immediately_type = message["replace_immediately_type"]
+
+        const data = {
+            "plan_id": plan_id,
+            "replace_immediately_type": replace_immediately_type,
+            "turn_off_auto_renew": turn_off_auto_renew,
+        }
+
+
+        const req = {
+            method: 'PATCH',
+            url: `${this.host}/api/subscriptions/${message.subscription_id}/`,
             data,
             headers,
         }
@@ -375,10 +420,10 @@ class Lotus {
 
         const params = {
             customer_id: message.customer_id,
+            event_limit_type: message.event_limit_type,
         }
         if (message.event_name) {
             params.event_name = message.event_name
-            params.event_limit_type = message.event_limit_type
         } else if (message.feature_name) {
             params.feature_name = message.feature_name
         }
@@ -391,74 +436,7 @@ class Lotus {
         if (this.timeout) {
             req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
         }
-        const returndata = axiosTest(req)
-
-        return returndata
-    }
-
-    /**
-     * Get customer access.
-     *
-     * @param {Object} message
-     *
-     */
-    getCurrentUsage(message, callback) {
-        // this._validate(message, 'subscription')
-        message = Object.assign({}, message)
-        message.library = 'lotus-node'
-        const headers = { 'X-API-KEY': this.apiKey }
-
-        if (message.library) {
-            delete message.library
-        }
-
-        const params = {
-            customer_id: message.customer_id,
-        }
-        const req = {
-            method: 'GET',
-            url: `${this.host}/api/draft_invoice/`,
-            headers,
-            params,
-        }
-        if (this.timeout) {
-            req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
-        }
-        const returndata = axiosTest(req)
-
-        return returndata
-    }
-
-    /**
-     * Get customer access.
-     *
-     * @param {Object} message
-     *
-     */
-    getPlans(message, callback) {
-        // this._validate(message, 'subscription')
-        message = Object.assign({}, message)
-        message.library = 'lotus-node'
-        const headers = { 'X-API-KEY': this.apiKey }
-
-        if (message.library) {
-            delete message.library
-        }
-
-        const req = {
-            method: 'GET',
-            url: `${this.host}/api/plans/`,
-            headers,
-        }
-        if (this.timeout) {
-            req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
-        }
-
-        let data = axios(req).then((res) => {
-            return res.data
-        })
-
-        return data
+        return axiosTest(req)
     }
 
     /**
