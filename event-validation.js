@@ -2,7 +2,7 @@ const type = require('component-type')
 const join = require('join-component')
 const assert = require('assert')
 
-export const ValidateEventType = {
+const ValidateEventType = {
     trackEvent : "trackEvent",
     customerDetails : "customerDetails",
     createCustomer : "createCustomer",

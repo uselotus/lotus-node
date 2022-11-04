@@ -7,11 +7,21 @@ const axios = require('axios')
 const axiosRetry = require('axios-retry')
 const ms = require('ms')
 const looselyValidate = require('./event-validation')
-const {ValidateEventType} = require("./event-validation");
 // const customerValidation = require('./customer-validation')
 
 const setImmediate = global.setImmediate || process.nextTick.bind(process)
 const noop = () => {}
+
+const ValidateEventType = {
+    trackEvent : "trackEvent",
+    customerDetails : "customerDetails",
+    createCustomer : "createCustomer",
+    createSubscription : "createSubscription",
+    cancelSubscription : "cancelSubscription",
+    changeSubscription : "changeSubscription",
+    subscriptionDetails : "subscriptionDetails",
+    customerAccess : "customerAccess",
+}
 
 const FIVE_MINUTES = 5 * 60 * 1000
 
@@ -143,7 +153,7 @@ class Lotus {
     //  * @param {Object} message
     //  *
     //  */
-    createCustomer(message, callback) {
+    async createCustomer(message, callback) {
         this._validate(message, ValidateEventType.createCustomer)
 
         message.customer_name = message.customerName || message.customer_name
@@ -179,20 +189,31 @@ class Lotus {
         const req = {
             method: 'POST',
             url: `${this.host}/api/customers/`,
-            data: data,
+            body: data,
             headers: headers,
         }
         if (this.timeout) {
             req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
         }
-        axios(req)
-            .then(() => {})
-            .catch((err) => {
-                if (err.response) {
-                    const error = new Error(err.response.statusText)
-                    console.log(error)
-                }
-            })
+        try {
+            const response = await axios(req)
+            console.log(response)
+        } catch (e) {
+            console.log(e)
+        }
+        let returndata
+        // axios(req)
+        //     .then(function (res) {
+        //         console.log("OBJECT FROM THE API", res)
+        //         returndata = res.data
+        //     })
+        //     .catch((err) => {
+        //         if (err.resposnse) {
+        //             const error = new Error(err.response.statusText)
+        //             console.log(error)
+        //         }
+        //     })
+        return returndata
     }
 
     /**
