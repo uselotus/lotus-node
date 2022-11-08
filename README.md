@@ -22,6 +22,23 @@ const lotus = new Lotus(api_key, {
 })
 ```
 
+## Currently Supported Methods
+```
+1. TrackEvent
+2. Get All Customers
+3. Get Customer Details
+4. Create Customer
+5. Create Subscription
+6. Cancel Subscription
+7. Change Subscription
+8. Get All Subscriptions
+9. Get Subscription Details
+10. Get All Plans
+11. Get Customer Access
+```
+
+
+
 ## Making calls
 
 Please refer to the [Lotus documentation](https://docs.uselotus.io/docs/api/) for more information on how to use the library.
