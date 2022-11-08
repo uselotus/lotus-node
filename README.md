@@ -24,7 +24,7 @@ const lotus = new Lotus(api_key, {
 
 ## Making calls
 
-Please refer to the [Lotus documentation](https://docs.uselotus.io/docs/intro) for more information on how to use the library.
+Please refer to the [Lotus documentation](https://docs.uselotus.io/docs/api/) for more information on how to use the library.
 
 ## Questions?
 
