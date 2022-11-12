@@ -164,12 +164,9 @@ class Lotus {
     async createCustomer(message) {
         this._validate(message, ValidateEventType.createCustomer)
 
-        message.customer_name = message.customerName || message.customer_name
-        delete message.customerName;
-
-        if(message.customerId) {
-            message.customer_id = message.customerId;
-            delete message.customerId
+        const data = {
+            customer_id: message.customerId || message.customer_id,
+            email: message.email,
         }
 
         message = Object.assign({}, message)
@@ -178,20 +175,16 @@ class Lotus {
             'X-API-KEY': this.apiKey,
         }
 
-        const data = {
-            customer_name: message.customer_name,
+        if(message.customer_name) {
+            data["customer_name"] = message.customer_name
         }
 
-        if( message.customer_id ) {
-            data.customer_id = message.customer_id;
+        if (message.payment_provider) {
+            data.payment_provider = message.payment_provider
         }
 
-        if (message.currency) {
-            data.currency = message.currency
-        }
-
-        if (message.balance) {
-            data.balance = message.balance
+        if (message.payment_provider_id) {
+            data.payment_provider_id = message.payment_provider_id
         }
         const req = {
             method: 'POST',
