@@ -77,8 +77,12 @@ function validateCustomerDetailsEvent(event) {
  */
 
 function validateCreateCustomerEvent(event) {
-    if (!("customer_name" in event || "customerName" in event)) {
-        throw new Error("customer_name is a required key")
+    if (!("customer_id" in event || "customerId" in event)) {
+        throw new Error("customer_id is a required key")
+    }
+
+    if (!"email" in event) {
+        throw new Error("Email is a required key")
     }
 }
 
