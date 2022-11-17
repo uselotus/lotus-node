@@ -20,6 +20,7 @@ const ValidateEventType = {
     changeSubscription : "changeSubscription",
     subscriptionDetails : "subscriptionDetails",
     customerAccess : "customerAccess",
+    createCustomersBatch : "createCustomersBatch",
 }
 
 const FIVE_MINUTES = 5 * 60 * 1000
@@ -420,6 +421,36 @@ class Lotus {
             method: 'GET',
             url: `${this.host}/api/customer_access/`,
             params,
+            headers,
+        }
+        if (this.timeout) {
+            req.timeout = typeof this.timeout === 'string' ? ms(this.timeout) : this.timeout
+        }
+        return axiosTest(req)
+    }
+
+
+    /**
+     * Creater customer batch.
+     *
+     * @param {Object} message
+     *
+     */
+    async createCustomersBatch(message) {
+        this._validate(message, ValidateEventType.createCustomersBatch)
+        const headers = {
+            'X-API-KEY': this.apiKey,
+        }
+
+        const data = {
+            customers: message.customers,
+            behavior_on_existing: message.behavior_on_existing,
+        }
+
+        const req = {
+            method: 'POST',
+            url: `${this.host}/api/batch_create_customers/`,
+            data,
             headers,
         }
         if (this.timeout) {

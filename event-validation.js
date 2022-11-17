@@ -11,6 +11,7 @@ const ValidateEventType = {
     changeSubscription : "changeSubscription",
     subscriptionDetails : "subscriptionDetails",
     customerAccess : "customerAccess",
+    createCustomersBatch : "createCustomersBatch",
 }
 
 // Lotus messages can be a maximum of 32 kB.
@@ -43,6 +44,8 @@ function eventValidation(event, type) {
             return validateSubscriptionDetailsEvent(event)
         case ValidateEventType.customerAccess:
             return validateCustomerAccessEvent(event)
+        case ValidateEventType.createCustomersBatch:
+            return validateCreateCustomersBatchEvent(event)
         default:
             assert(0, 'Invalid event type: "' + type + '"')
     }
@@ -192,6 +195,42 @@ function validateChangeSubscriptionEvent(event) {
     if(!types.includes(replace_immediately_type)) {
         throw new Error("Invalid replace_immediately_type")
     }
+}
+
+
+/**
+ * Validate a "CreateCustomersBatch" event.
+ */
+
+function validateCreateCustomersBatchEvent(event) {
+    const customers = event.customers || []
+    const behavior_on_existing = event.behavior_on_existing || undefined
+
+    if (!customers || !customers.length) {
+        throw new Error("Customers is a required array")
+    }
+
+    customers.forEach((customer, index) => {
+        if (!("customer_id" in customer || "customerId" in customer)) {
+            throw new Error(`customer_id is a required key, Missing in ${index + 1} customer`)
+        }
+
+        if (!"email" in customer) {
+            throw new Error(`email is a required key, Missing in ${index + 1} customer`)
+        }
+
+    })
+
+    if(!behavior_on_existing) {
+        throw new Error(`behavior_on_existing is a required key`)
+    }
+
+    const allowed_types = ["merge","ignore", "overwrite"]
+
+    if (!allowed_types.includes(behavior_on_existing)) {
+        throw new Error(`behavior_on_existing Must be one the these "merge","ignore", "overwrite"`)
+    }
+
 }
 
 
