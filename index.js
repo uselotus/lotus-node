@@ -180,6 +180,10 @@ class Lotus {
             data["customer_name"] = message.customer_name
         }
 
+        if(message.properties) {
+            data["properties"] = message.properties
+        }
+
         if (message.payment_provider) {
             data.payment_provider = message.payment_provider
         }
