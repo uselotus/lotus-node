@@ -3,6 +3,7 @@ const join = require('join-component')
 const assert = require('assert')
 
 const ValidateEventType = {
+<<<<<<< Updated upstream
     trackEvent : "trackEvent",
     customerDetails : "customerDetails",
     createCustomer : "createCustomer",
@@ -12,6 +13,16 @@ const ValidateEventType = {
     subscriptionDetails : "subscriptionDetails",
     customerAccess : "customerAccess",
     createCustomersBatch : "createCustomersBatch",
+=======
+    trackEvent: "trackEvent",
+    customerDetails: "customerDetails",
+    createCustomer: "createCustomer",
+    createSubscription: "createSubscription",
+    cancelSubscription: "cancelSubscription",
+    changeSubscription: "changeSubscription",
+    subscriptionDetails: "subscriptionDetails",
+    customerAccess: "customerAccess",
+>>>>>>> Stashed changes
 }
 
 // Lotus messages can be a maximum of 32 kB.
@@ -56,13 +67,20 @@ function eventValidation(event, type) {
  */
 
 function validateTrackEventEvent(event) {
-    if (!("event_name" in event || "eventName" in event)) {
-        throw new Error("event_name is a required key")
-    }
+    if (!event.batch || !event.batch.length) {
+        throw new Error("Messages Batch is a required key")
 
-    if (!("customer_id" in event || "customerId" in event)) {
-        throw new Error("customer_id is a required key")
     }
+    event.batch.forEach(message => {
+        if (!("event_name" in message || "eventName" in message)) {
+            throw new Error("event_name is a required key")
+        }
+
+        if (!("customer_id" in message || "customerId" in message)) {
+            throw new Error("customer_id is a required key")
+        }
+    })
+
 }
 
 /**
@@ -119,16 +137,16 @@ function validateCancelSubscriptionEvent(event) {
     const turn_off_auto_renew = event["turn_off_auto_renew"]
     const replace_immediately_type = event["replace_immediately_type"]
 
-    if (turn_off_auto_renew &&  replace_immediately_type) {
+    if (turn_off_auto_renew && replace_immediately_type) {
         throw new Error("Must provide either turn_off_auto_renew or replace_immediately_type")
     }
 
-    if(!turn_off_auto_renew) {
+    if (!turn_off_auto_renew) {
         const types = [
             "end_current_subscription_and_bill",
             "end_current_subscription_dont_bill",
         ]
-        if(!types.includes(replace_immediately_type)) {
+        if (!types.includes(replace_immediately_type)) {
             throw new Error("replace_immediately_type must be one of 'end_current_subscription_and_bill', 'end_current_subscription_dont_bill'")
         }
     }
@@ -188,11 +206,11 @@ function validateChangeSubscriptionEvent(event) {
         "change_subscription_plan"
     ]
 
-    if(!replace_immediately_type) {
+    if (!replace_immediately_type) {
         throw new Error("replace_immediately_type is a required key")
     }
 
-    if(!types.includes(replace_immediately_type)) {
+    if (!types.includes(replace_immediately_type)) {
         throw new Error("Invalid replace_immediately_type")
     }
 }
