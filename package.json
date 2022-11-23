@@ -1,7 +1,7 @@
 {
     "name": "lotus-node",
     "description": "Lotus Node.js API Wrapper",
-    "version": "1.0.231",
+    "version": "1.0.233",
     "license": "MIT",
     "repository": "uselotus/lotus-node",
     "author": {
