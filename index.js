@@ -433,32 +433,38 @@ class Lotus {
      * check whether it should be flushed.
      *
      * @param {String} type
-     * @param {Object} message
+     * @param {Object} apiMessage
      * @param {Function} [callback] (optional)
      * @api private
      */
-    enqueue(type, message, callback) {
+    enqueue(type, apiMessage, callback) {
         callback = callback || noop
 
         if (!this.enable) {
             return setImmediate(callback)
         }
 
-        message = Object.assign({}, message)
-        message.type = type
-        message.library = 'lotus-node'
+        const messages = apiMessage.batch  || []
 
-        message.time_created = message.timeCreated || message.time_created || new Date() ;
-        message.idempotency_id =  message.idempotencyId || message.idempotency_id || uuidv4();
-        message.customer_id = message.customerId || message.customer_id
-        message.event_name = message.eventName || message.event_name
+        if(!messages.length) {
+             throw  new Error("Messages can't be empty ")
+        }
 
-        delete message.timeCreated;
-        delete message.idempotencyId;
-        delete message.customerId;
-        delete message.eventName;
+        messages.forEach( message => {
+            message = Object.assign({}, message)
+            message.type = type
+            message.library = 'lotus-node'
+            message.time_created = message.timeCreated || message.time_created || new Date() ;
+            message.idempotency_id =  message.idempotencyId || message.idempotency_id || uuidv4();
+            message.customer_id = message.customerId || message.customer_id
+            message.event_name = message.eventName || message.event_name
 
-        this.queue.push({ message, callback })
+            delete message.timeCreated;
+            delete message.idempotencyId;
+            delete message.customerId;
+            delete message.eventName;
+            this.queue.push({ message, callback })
+        })
 
         if (this.queue.length >= this.flushAt) {
             this.flush()
